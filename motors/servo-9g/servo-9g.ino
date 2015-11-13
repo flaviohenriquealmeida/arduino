@@ -1,9 +1,10 @@
 #include <Servo.h>
 
-#define TEMPO_DE_ESPERA_MUDANCA_POSICAO 2
+#define TEMPO_DE_ESPERA_DO_GIRO 2
+
 Servo servo; 
 
-int posicaoAtual = 90; 
+int anguloAtual = 90; 
 void setup() {
   Serial.begin(9600);
   servo.attach(9);
@@ -14,10 +15,10 @@ void loop() {
   
   switch(ch) {
     case 'o':
-      moverParaEsquerda();
+      girarAntiHorario();
       break;
     case 'p':
-      moverParaDireita();
+      girarHorario();
       break;
     case 'c':
       centralizar();
@@ -25,42 +26,42 @@ void loop() {
   }
 }
 
-void moverParaEsquerda() {
-  if(podeAvancar(posicaoAtual-1)) {
-    Serial.println("Moveu para esquerda");
-    posicaoAtual--;
-    servo.write(posicaoAtual);
-    esperaMudarDePosicao();
+void girarAntiHorario() {
+  if(podeGirar(anguloAtual-1)) {
+    Serial.println("Girou sentido anti-horário");
+    anguloAtual--;
+    servo.write(anguloAtual);
+    esperaGirar();
   }
 }
-void moverParaDireita() {
-  if(podeAvancar(posicaoAtual+1)) {
-    Serial.println("Moveu para Direita");
-    posicaoAtual++;
-    servo.write(posicaoAtual);
-    esperaMudarDePosicao();
+void girarHorario() {
+  if(podeGirar(anguloAtual+1)) {
+    Serial.println("Girou sentido horário");
+    anguloAtual++;
+    servo.write(anguloAtual);
+    esperaGirar();
   }
 }
 
 void centralizar() {
-  posicaoAtual = 90;
-  servo.write(posicaoAtual);
-  esperaMudarDePosicao();
+  anguloAtual = 90;
+  servo.write(anguloAtual);
+  esperaGirar();
 }
 
-boolean podeAvancar(int posicaoPretendida) {
-  boolean avancou = posicaoPretendida >=0 and posicaoPretendida <= 180;
+boolean podeGirar(int anguloPretendido) {
+  boolean avancou = anguloPretendido >=0 and anguloPretendido <= 180;
   if(!avancou) {
-    Serial.println("Não pode mais avançar");
-    Serial.print("Posição atual: ");
-    Serial.println(posicaoAtual);
-    Serial.print("Posição pretendida: ");
-    Serial.println(posicaoPretendida);
+    Serial.println("Não pode mais girar. Chegou ao limite");
+    Serial.print("Ângulo atual: ");
+    Serial.println(anguloAtual);
+    Serial.print("Ângulo pretendido: ");
+    Serial.println(anguloPretendido);
   }
   return avancou;
 }
 
-void esperaMudarDePosicao() {
-  delay(TEMPO_DE_ESPERA_MUDANCA_POSICAO);
+void esperaGirar() {
+  delay(TEMPO_DE_ESPERA_DO_GIRO);
 }
 
